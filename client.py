@@ -15,9 +15,8 @@ Stop receiving and disconnect when the other client disconnects.
 """
 
 #   Server IP and Port  #
-# SERVER_IP = "192.168.56.101"
-#   Testing using my own device (local host ip)
-SERVER_IP = '127.0.0.1'
+# SERVER_IP = '127.0.0.1'
+SERVER_IP = '192.168.56.101'
 SERVER_PORT = 5000
 
 

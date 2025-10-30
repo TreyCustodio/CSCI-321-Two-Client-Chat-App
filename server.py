@@ -150,8 +150,8 @@ class Server(object):
 #   Main Message Relay Routine   #
 def main():
     #   Set Server IP and port  #
-    # SERVER_IP = "192.168.56.101"
-    SERVER_IP = '127.0.0.1'
+    # SERVER_IP = '127.0.0.1'
+    SERVER_IP = "192.168.56.101"
     SERVER_PORT = 5000
     
     #   Initialize and run the server   #
