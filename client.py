@@ -27,7 +27,7 @@ def receive(client):
     if data.decode() == "QUIT":
         client.close()
     else:
-        print("Them:", data.decode(), end="\n\n")
+        print(data.decode(), end="\n\n")
 
 
 #   Routine for connecting to server and chatting with other client #
@@ -41,6 +41,10 @@ def main():
 
     print('Successfully connected to server.\n')
     data = client.recv(1024)
+    name = input("Please enter a username: ")
+    client.sendall(name.encode())
+    data = client.recv(1024)
+
     
     #   Print the instructions  #
     instructions = "Beginning of chat. Enter your message or enter \'exit\' to QUIT.\n"

@@ -21,6 +21,9 @@ class Client(object):
         self.port = port
         self.user_name = user_name
 
+    def set_name(self, name=""):
+        self.user_name = name
+
     def get_name(self):
         return self.user_name
     
@@ -59,6 +62,15 @@ class Server(object):
     
     
     def main(self):
+        #   Create a log file   #
+        log = open('log.txt', 'w')
+        log.write("-" * 20)
+        log.write("\n")
+        log.write("Server Log\n")
+        log.write("-" * 20)
+        log.write("\n")
+        log.flush()
+
         #   Define an exit event; use this to close the connections once activated  #
         exit_event = threading.Event()
 
@@ -82,11 +94,18 @@ class Server(object):
                             client.send_data("QUIT")
                             return
                         
+                        data = client.get_name() + ": " + data
+                        
                         if client_id == 1:
                             client_2.send_data(data)
+                            log.write(data + "\n")
+                            log.flush()
                         
                         elif client_id == 2:
                             client_1.send_data(data)
+                            log.write(data + "\n")
+                            log.flush()
+
 
         #   Define a Socket with IPv4 address family and TCP Socket Type #
         host = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -102,18 +121,16 @@ class Server(object):
         num_connections = 0
         while num_connections != 2:
             #   Accept the host
-            self.clients[num_connections] = Client(*host.accept())
+            self.clients[num_connections] = Client(*host.accept(), "Client" + str(num_connections + 1))
             sockname = self.clients[num_connections].get_socket().getsockname()
             print("Client at IP", str(sockname[0]), "on port",  str(sockname[1]), "connected")
             
             #   Start a thread for the client
             if num_connections == 0:
                 thread_1 = threading.Thread(target=get_data, args=(self.clients[num_connections],1))
-                thread_1.start()
 
             elif num_connections == 1:
                 thread_2 = threading.Thread(target=get_data, args=(self.clients[num_connections],2))
-                thread_2.start()
 
             #   Increment num_connections
             num_connections += 1
@@ -126,6 +143,21 @@ class Server(object):
         #   Send over a confirmation code to both clients
         client_1.send_data("1")
         client_2.send_data("1")
+
+        #   Get each username
+        name_1 = client_1.receive_data()
+        name_2 = client_2.receive_data()
+        print(name_1)
+        print(name_2)
+        client_1.set_name(name_1)
+        client_2.set_name(name_2)
+
+        #   Send confirmation again
+        client_1.send_data("1")
+        client_2.send_data("1")
+
+        thread_1.start()
+        thread_2.start()
 
         #   Display a confirmation message
         print("Both clients connected. Now commencing chat.")
@@ -143,6 +175,7 @@ class Server(object):
         print("Client 2's connection closed.")
 
         host.close()
+        log.close()
         print("Server closed.")
         return
     
